@@ -1,0 +1,8 @@
+__pycache__/
+**/__pycache__/
+*.pyc
+.env
+tocken.pickle
+services/credentials.json
+.git/
+.vscode/

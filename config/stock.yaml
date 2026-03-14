@@ -1,0 +1,7 @@
+watchlist:
+  - ticker: AAPL
+    name: Apple Inc.
+  - ticker: MU
+    name: Micron Technology
+  - ticker: TTWO
+    name: Take-Two Interactive
