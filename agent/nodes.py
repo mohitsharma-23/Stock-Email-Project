@@ -91,7 +91,11 @@ def summarize_node(state: StockNewsState) -> StockNewsState:
         - Prioritize the news containing information about the stock followed by any news which impacts the stock indirectly
         - Mention any notable risks if mentioned
         - Strictly summarize only based on the input received without any additional information
-        - Provide the sentiment (bearish/bullish/neutral) in one line
+        - Provide the sentiment (bearish/bullish/neutral) in one line. Provide the sentiment based on the below rules:
+            Bullish - positive news about the stock, price increase, posisitve earnings, upgrades, price aboe previous close
+            Bearish - negative news about the stock, price decrease, negative earnings, downgrades, price below previous close
+            Neutral - no significant news, price stable, no change in earnings, no upgrades/downgrades, mixed signals or no strong directional news.
+         4. Source of each of the news.
         - Always provide the list of url of the news article for the user to refer to
         Be factual, concise and avoid any speculations.
         """
