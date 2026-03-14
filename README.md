@@ -4,85 +4,85 @@ An AI-powered agent that fetches real-time stock prices and news for a configura
 
 Built with [LangGraph](https://github.com/langchain-ai/langgraph) to orchestrate a multi-step agentic pipeline.
 
-## How It Works
+## What it does
 
-The agent runs a 5-node LangGraph pipeline:
-
-```
-Load Watchlist → Fetch Prices & News → Summarize per Stock → Compile HTML Digest → Send Email
-```
-
-1. **Load Stocks** - Reads your stock watchlist from `config/stock.yaml`
-2. **Fetch News** - Pulls latest price data and news articles for each ticker via [yfinance](https://github.com/ranaroussi/yfinance)
-3. **Summarize** - Uses GPT-4o-mini to generate concise bullet-point summaries with sentiment analysis (bullish/bearish/neutral)
-4. **Compile Digest** - Formats all summaries into a professional HTML email with market mood, source links, and disclaimer
-5. **Send Email** - Delivers the digest via Gmail API (OAuth2)
-
-## Project Structure
+There are 5 steps that run in sequence:
 
 ```
-├── main.py                  # Entry point
+Load watchlist -> Fetch prices & news -> Summarize -> Build HTML email -> Send via Gmail
+```
+
+- Reads tickers from a YAML config file
+- Grabs real-time prices and recent headlines using [yfinance](https://github.com/ranaroussi/yfinance)
+- Summarizes each stock into bullet points with sentiment (bullish/bearish/neutral)
+- Compiles everything into a styled HTML email
+- Sends it through Gmail API (OAuth2)
+
+## Project structure
+
+```
+├── main.py                  # entry point
 ├── agent/
-│   ├── graph.py             # LangGraph pipeline definition
-│   ├── nodes.py             # Pipeline node implementations
-│   ├── state.py             # State schema (TypedDict)
-│   └── tools.py             # yfinance tools (price & news fetching)
+│   ├── graph.py             # LangGraph pipeline
+│   ├── nodes.py             # each step in the pipeline
+│   ├── state.py             # state schema
+│   └── tools.py             # yfinance wrappers
 ├── config/
-│   ├── settings.py          # Environment config (Pydantic)
-│   └── stock.yaml           # Stock watchlist
+│   ├── settings.py          # env config (pydantic)
+│   └── stock.yaml           # watchlist
 ├── services/
-│   └── email_service.py     # Gmail OAuth2 authentication & sending
-├── Dockerfile               # Container support
+│   └── email_service.py     # Gmail OAuth + sending
+├── Dockerfile
 ├── requirements.txt
 └── .gitignore
 ```
 
-## Prerequisites
+## Getting started
 
+You'll need:
 - Python 3.13+
-- An [OpenAI API key](https://platform.openai.com/api-keys)
-- Gmail API credentials (OAuth2) — follow the [Gmail API Python Quickstart](https://developers.google.com/gmail/api/quickstart/python) to get `credentials.json`
+- An OpenAI API key
+- Gmail API OAuth credentials (`credentials.json`). See the [Gmail quickstart guide](https://developers.google.com/gmail/api/quickstart/python)
 
-## Setup
+### Setup
 
-1. **Clone the repo**
-   ```bash
-   git clone https://github.com/mohitsharma-23/Stock-Email-Project.git
-   cd Stock-Email-Project
-   ```
+```bash
+git clone https://github.com/mohitsharma-23/Stock-Email-Project.git
+cd Stock-Email-Project
+pip install -r requirements.txt
+```
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+Create a `.env` file:
 
-3. **Configure environment variables** - Create a `.env` file:
-   ```env
-   OPENAI_API_KEY=your_openai_api_key
-   GMAIL_SENDER=your_email@gmail.com
-   GMAIL_RECIPIENT=recipient_email@gmail.com
-   ```
+```
+OPENAI_API_KEY=your_key_here
+GMAIL_SENDER=you@gmail.com
+GMAIL_RECIPIENT=whoever@gmail.com
+```
 
-4. **Add Gmail credentials** - Place your `credentials.json` file in the `services/` directory.
+Drop your `credentials.json` into the `services/` folder.
 
-5. **Customize your watchlist** - Edit `config/stock.yaml`:
-   ```yaml
-   watchlist:
-     - ticker: AAPL
-       name: Apple Inc.
-     - ticker: MU
-       name: Micron Technology
-     - ticker: TTWO
-       name: Take-Two Interactive
-   ```
+### Configure your watchlist
 
-## Usage
+Edit `config/stock.yaml` to add/remove stocks:
+
+```yaml
+watchlist:
+  - ticker: AAPL
+    name: Apple Inc.
+  - ticker: MU
+    name: Micron Technology
+  - ticker: TTWO
+    name: Take-Two Interactive
+```
+
+### Run it
 
 ```bash
 python main.py
 ```
 
-On first run, a browser window will open for Gmail OAuth authorization. A token is saved locally so subsequent runs authenticate automatically.
+First time it'll open a browser for Gmail auth. After that it saves a token locally so you won't need to do it again.
 
 ### Docker
 
@@ -91,19 +91,15 @@ docker build -t stock-email-agent .
 docker run --env-file .env stock-email-agent
 ```
 
-## Sample Output
+## What the email looks like
 
-The email digest includes:
-- Date and overall market mood
-- Per-stock sections with current price, day change %, and summarized news bullets
-- Sentiment indicator (bullish / bearish / neutral) per stock
-- Source links to original articles
-- Professional formatting with a disclaimer footer
+Each digest has:
+- Today's date + a one-line market mood summary
+- Per-stock section with price, day change, and news bullets
+- Sentiment tag per stock
+- Links to the original articles
+- Disclaimer at the bottom
 
-## Tech Stack
+## Built with
 
-- **LangGraph** - Agent orchestration
-- **LangChain + OpenAI (GPT-4o-mini)** - News summarization & digest compilation
-- **yfinance** - Real-time stock data & news
-- **Gmail API** - Email delivery via OAuth2
-- **Pydantic Settings** - Environment configuration
+LangGraph, LangChain, OpenAI (GPT-4o-mini), yfinance, Gmail API, Pydantic
