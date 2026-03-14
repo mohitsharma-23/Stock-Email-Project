@@ -85,16 +85,3 @@ def fetch_stock_news(ticker: str) -> dict:
             "content_type": "N/A",
             "error": str(e)
         }
-
-
-ticker = 'mu'
-info = fetch_stock_price.invoke(
-    {
-        "ticker":ticker
-    }
-)
-stock_news = fetch_stock_news.invoke(
-    {
-        "ticker": ticker
-    }
-)
