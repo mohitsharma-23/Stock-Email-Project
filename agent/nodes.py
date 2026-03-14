@@ -160,7 +160,7 @@ def compile_digest_node(state: StockNewsState) -> StockNewsState:
     """Compile all per-stock summaries into a single formatted HTML email body"""
     dotenv.load_dotenv()
     openai_api_key = os.getenv("OPENAI_API_KEY")
-    llm = ChatOpenAI(api_key=openai_api_key, model='gpt-4o-mini', temperature=0)
+    llm = ChatOpenAI(api_key=openai_api_key, model='gpt-4o-mini', temperature=0, model_kwargs={"seed":42})
 
     digest_prompt = ChatPromptTemplate.from_messages([
         ('system', """You are a financial newletter editor.
@@ -168,7 +168,10 @@ def compile_digest_node(state: StockNewsState) -> StockNewsState:
          Structure:
          1. Header with today's date {date} and a one-line overall market mood sentence based on the summaries.
          2. One section per stock with price and bullet points about the stock news.
-         3. Each stock should show the sentiment based on the news about the stock (bearish/ bullish/ neutral).
+         3. Each stock should show the sentiment based on the news about the stock (bearish/ bullish/ neutral). Provide the sentiment based on the below rules:
+            Bullish - positive news about the stock, price increase, posisitve earnings, upgrades, price aboe previous close
+            Bearish - negative news about the stock, price decrease, negative earnings, downgrades, price below previous close
+            Neutral - no significant news, price stable, no change in earnings, no upgrades/downgrades, mixed signals or no strong directional news.
          4. Source of each of the news.
          5. Footer with a brief disclaimer.
          Keep professional tone and styling for the email.
